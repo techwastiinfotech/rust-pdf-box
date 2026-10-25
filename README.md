@@ -198,10 +198,10 @@ fn main() -> PdfResult<()> {
     combined.save("merged.pdf")?;
 
     // Splitting
-    let splitter = PDFSplitter::new(&doc1);
-    let pages = splitter.split_into_pages()?;
+    let pages = PDFSplitter::split_into_single_pages(&doc1.inner)?;
     for (i, p) in pages.into_iter().enumerate() {
-        p.save(&format!("page_{}.pdf", i + 1))?;
+        let mut sub_doc = PdfDocument { inner: p };
+        sub_doc.save(&format!("page_{}.pdf", i + 1))?;
     }
 
     Ok(())
@@ -210,10 +210,46 @@ fn main() -> PdfResult<()> {
 
 ---
 
+## Standalone CLI Tool (`pdfbox`)
+
+`rust-pdf-box` includes a cross-platform CLI binary that can be used directly from shell scripts, Python, Node.js, Docker, or other CI/CD pipelines:
+
+```bash
+# Display metadata & page count
+pdfbox info document.pdf
+
+# Extract all text
+pdfbox text document.pdf output.txt
+
+# Watermark across all pages
+pdfbox watermark input.pdf watermarked.pdf "CONFIDENTIAL" 0.25 45
+
+# Apply rubber stamp
+pdfbox stamp contract.pdf approved.pdf "APPROVED" "Security Team"
+
+# Digitally sign with ISO 32000 CMS/PKCS#7
+pdfbox sign contract.pdf signed.pdf "Techwasti Authority" "Execution" "India"
+
+# Cryptographically verify signatures & detect tampering
+pdfbox verify signed.pdf
+
+# Merge multiple PDFs
+pdfbox merge combined.pdf part1.pdf part2.pdf part3.pdf
+
+# Split multi-page document into single pages
+pdfbox split report.pdf ./pages/
+
+# Flatten interactive form fields
+pdfbox flatten form.pdf flattened.pdf
+```
+
+---
+
 ## Documentation & Guides
 
 Comprehensive guides are available in the [`docs/`](docs/) directory:
 
+- 🚀 [**Integration & Artifacts Guide**](docs/INTEGRATION_AND_ARTIFACTS.md): How to use `rust-pdf-box` in other projects, Docker containers, Python/Node.js, and CI/CD pipelines.
 - 📐 [**Architecture Guide**](docs/ARCHITECTURE.md): Deep dive into the COS object tree, Page Description layer, and serialization pipeline.
 - 🔏 [**Digital Signatures Guide**](docs/DIGITAL_SIGNATURES.md): Detailed explanation of ISO 32000 CMS / PKCS#7 signing, `/ByteRange` calculation, and tamper verification.
 - 🎨 [**Stamping & Watermarking Guide**](docs/STAMPING_AND_WATERMARKING.md): Advanced watermarking patterns, rotation, multi-line text, rubber stamps, and page ranges.
