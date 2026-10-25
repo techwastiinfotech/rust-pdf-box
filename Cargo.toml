@@ -2,6 +2,15 @@
 name = "rust-pdf-box"
 version = "0.1.0"
 edition = "2024"
+authors = ["Techwasti Infotech <techwastiinfotech@gmail.com>"]
+description = "A comprehensive, pure Rust implementation of Apache PDFBox featuring context-oriented PDF processing, digital signatures, watermarking, stamping, and AcroForms."
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/techwastiinfotech/rust-pdf-box"
+homepage = "https://github.com/techwastiinfotech/rust-pdf-box"
+documentation = "https://docs.rs/rust-pdf-box"
+readme = "README.md"
+keywords = ["pdf", "pdfbox", "digital-signature", "watermark", "stamp"]
+categories = ["development-tools", "parsing", "cryptography"]
 
 [dependencies]
 flate2 = "1.0"
