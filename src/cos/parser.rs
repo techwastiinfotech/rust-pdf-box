@@ -172,7 +172,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn find_startxref(&self) -> PdfResult<usize> {
+    pub fn find_startxref(&self) -> PdfResult<usize> {
         let pattern = b"startxref";
         let search_window = 2048.min(self.data.len());
         let start = self.data.len() - search_window;
