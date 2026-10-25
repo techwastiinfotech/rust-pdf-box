@@ -240,4 +240,9 @@ impl PDDocument {
     pub fn stamp(&self) -> crate::stamp::Stamper {
         crate::stamp::Stamper::new()
     }
+
+    /// Digitally signs the document using the given Signer and returns the signed PDF bytes.
+    pub fn sign(&mut self, signer: crate::sign::Signer) -> PdfResult<Vec<u8>> {
+        signer.sign_document(self)
+    }
 }

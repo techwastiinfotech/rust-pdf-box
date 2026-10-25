@@ -1,17 +1,21 @@
 pub mod content;
 pub mod cos;
+pub mod crypto;
 pub mod error;
 pub mod font;
 pub mod image;
 pub mod pd;
+pub mod sign;
 pub mod stamp;
 
 pub use content::{AppendMode, Color, PDPageContentStream};
 pub use cos::{COSDocument, COSDictionary, COSArray, COSObject, COSStream, COSString, COSName, ObjectId};
+pub use crypto::{DerElement, SigningKey};
 pub use error::{PdfError, PdfResult};
 pub use font::{PDTrueTypeFont, PDType1Font};
 pub use image::PDImageXObject;
 pub use pd::{PDDocument, PDPage, PDRectangle, PDResources, PDDocumentInformation, PDDocumentCatalog};
+pub use sign::{SignatureReport, SignatureVerifier, Signer, VisualSignature};
 pub use stamp::{PageRange, StampLayer, StampPosition, Stamper};
 
 #[cfg(test)]
@@ -153,5 +157,39 @@ mod tests {
         assert_eq!(loaded.page_count(), 2);
         assert!(loaded.get_page(0).unwrap().content_stream_ids().len() >= 3);
         assert!(loaded.get_page(1).unwrap().content_stream_ids().len() >= 2);
+    }
+
+    #[test]
+    fn test_digital_signing_and_verification() {
+        let mut doc = PDDocument::new();
+        let page = PDPage::new(PDRectangle::A4);
+        doc.add_page(page);
+
+        // 1. Generate in-memory self-signed signing key in pure Rust
+        let signing_key = SigningKey::generate_self_signed("CN=Techwasti, O=Techwasti Infotech")
+            .expect("key generation failed");
+
+        // 2. Configure signer with visual stamp
+        let signer = Signer::new(signing_key)
+            .with_name("Techwasti Infotech")
+            .with_reason("Contract Agreement Verification")
+            .with_location("India")
+            .with_visual_stamp(
+                VisualSignature::at_page(1)
+                    .rect(50.0, 50.0, 260.0, 120.0)
+                    .title("Digitally Signed by Techwasti")
+                    .detail("Status: Validated\nDate: 2026-10-25\nAuthority: Techwasti CA"),
+            );
+
+        // 3. Sign the PDF
+        let signed_bytes = doc.sign(signer).expect("signing failed");
+        assert!(signed_bytes.len() > 1000);
+
+        // 4. Verify signature in the generated PDF
+        let report = SignatureVerifier::verify(&signed_bytes).expect("verification failed");
+        assert!(report.is_valid);
+        assert_eq!(report.signer_name, Some("Techwasti Infotech".to_string()));
+        assert_eq!(report.reason, Some("Contract Agreement Verification".to_string()));
+        assert_eq!(report.location, Some("India".to_string()));
     }
 }

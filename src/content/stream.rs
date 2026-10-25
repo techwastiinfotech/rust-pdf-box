@@ -328,4 +328,9 @@ impl PDPageContentStream {
         page.sync_resources();
         Ok(())
     }
+
+    /// Returns the raw byte buffer of this content stream.
+    pub fn finish_to_bytes(self) -> Vec<u8> {
+        self.buffer
+    }
 }
