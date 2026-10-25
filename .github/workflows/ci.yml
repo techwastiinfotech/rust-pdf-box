@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Test on ${{ matrix.os }}
+    name: Test & Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -16,7 +16,8 @@ jobs:
         rust: [stable]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Install Rust ${{ matrix.rust }}
         uses: dtolnay/rust-toolchain@stable
@@ -27,16 +28,58 @@ jobs:
       - name: Cache Cargo Dependencies
         uses: Swatinem/rust-cache@v2
 
-      - name: Run Cargo Check
-        run: cargo check --all-targets
+      - name: Check Formatting
+        run: cargo fmt --all -- --check
+
+      - name: Run Clippy Linter
+        run: cargo clippy --all-targets -- -D warnings
 
       - name: Run Unit & Integration Tests
         run: cargo test --verbose
 
-      - name: Run Examples
+      - name: Run All Examples
         run: |
+          cargo run --example quickstart
           cargo run --example stamping_demo
           cargo run --example digital_signature_demo
+          cargo run --example form_processing_demo
+          cargo run --example merge_split_demo
+          cargo run --example extract_text_demo
 
-      - name: Check Formatting
-        run: cargo fmt --all -- --check
+      - name: Build CLI Binary
+        run: cargo build --release --bin pdfbox
+
+      - name: Upload Development Binary Artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-build-${{ matrix.os }}
+          path: |
+            target/release/pdfbox
+            target/release/pdfbox.exe
+          if-no-files-found: ignore
+          retention-days: 14
+
+  package-check:
+    name: Package & Docs Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Verify Crate Packaging
+        run: cargo package --verbose
+
+      - name: Verify Documentation Build
+        run: cargo doc --no-deps --all-features
+
+      - name: Upload Crate Artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-crate-package
+          path: target/package/*.crate
+          retention-days: 14
