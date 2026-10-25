@@ -1,0 +1,28 @@
+[book]
+title = "rust-pdf-box Documentation"
+authors = ["Techwasti Infotech <techwastiinfotech@gmail.com>"]
+description = "Comprehensive guides, architecture, migration notes, and API references for rust-pdf-box."
+language = "en"
+src = "src"
+
+[build]
+build-dir = "book"
+create-missing = false
+
+[output.html]
+git-repository-url = "https://github.com/techwastiinfotech/rust-pdf-box"
+edit-url-template = "https://github.com/techwastiinfotech/rust-pdf-box/edit/main/book/src/{path}"
+site-url = "/rust-pdf-box/"
+theme = "theme"
+additional-css = ["theme/custom.css"]
+additional-js = ["theme/mermaid-init.js"]
+
+[output.html.search]
+enable = true
+limit-results = 30
+use-boolean-and = true
+boost-title = 2
+boost-hierarchy = 1
+boost-paragraph = 1
+expand = true
+heading-split-level = 3

@@ -1,3 +1,4 @@
 /target
+/book/book
 *.pdf
 !tests/fixtures/*.pdf

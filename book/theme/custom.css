@@ -1,0 +1,79 @@
+/* Custom styling for rust-pdf-box mdBook documentation */
+
+:root {
+    --primary-color: #0d9488; /* Techwasti teal */
+    --primary-hover: #0f766e;
+}
+
+/* Header branding accent */
+.menu-title {
+    font-weight: 700 !important;
+    letter-spacing: -0.02em;
+}
+
+/* Sidebar badges and link improvements */
+.sidebar .sidebar-scrollbox {
+    padding-top: 15px;
+}
+
+.sidebar a.active {
+    color: var(--primary-color) !important;
+    font-weight: 600;
+}
+
+/* API badge link in sidebar */
+.api-link-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #0d9488, #2563eb);
+    color: #ffffff !important;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+/* Content block improvements */
+.content main table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.5rem 0;
+}
+
+.content main table th {
+    background-color: rgba(13, 148, 136, 0.1);
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 2px solid rgba(13, 148, 136, 0.3);
+}
+
+.content main table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(125, 125, 125, 0.2);
+}
+
+/* Mermaid diagram container */
+.mermaid {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(125, 125, 125, 0.15);
+    border-radius: 8px;
+    padding: 20px;
+    overflow-x: auto;
+}
+
+/* Admonitions / Callout boxes */
+.callout {
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-left: 4px solid var(--primary-color);
+    background-color: rgba(13, 148, 136, 0.08);
+    border-radius: 0 8px 8px 0;
+}
+
+.callout-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--primary-color);
+}

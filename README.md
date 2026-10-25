@@ -3,6 +3,7 @@
 <div align="center">
 
 [![CI](https://github.com/techwastiinfotech/rust-pdf-box/actions/workflows/ci.yml/badge.svg)](https://github.com/techwastiinfotech/rust-pdf-box/actions)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-teal.svg)](https://techwastiinfotech.github.io/rust-pdf-box)
 [![Crates.io](https://img.shields.io/crates/v/rust-pdf-box.svg)](https://crates.io/crates/rust-pdf-box)
 [![Docs.rs](https://docs.rs/rust-pdf-box/badge.svg)](https://docs.rs/rust-pdf-box)
 [![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](#license)
@@ -11,9 +12,11 @@
 
 **A comprehensive, pure Rust implementation of Apache PDFBox featuring modern, context-oriented, and ergonomic PDF processing.**
 
+[Documentation Book](https://techwastiinfotech.github.io/rust-pdf-box) •
+[API Reference](https://techwastiinfotech.github.io/rust-pdf-box/api/rust_pdf_box/index.html) •
 [Key Features](#key-features) •
 [Quick Start](#quick-start) •
-[Guides & Architecture](#documentation--guides) •
+[Architecture](#documentation--guides) •
 [Examples](#examples--sample-pdfs) •
 [Contributing](#contributing)
 
