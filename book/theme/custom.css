@@ -11,6 +11,21 @@
     letter-spacing: -0.02em;
 }
 
+/* Hero banner container on homepage */
+.hero-banner {
+    background: linear-gradient(135deg, rgba(13, 148, 136, 0.12), rgba(37, 99, 235, 0.08));
+    border: 1px solid rgba(13, 148, 136, 0.25);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 24px 0;
+}
+
+.hero-banner h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: var(--primary-color);
+}
+
 /* Sidebar badges and link improvements */
 .sidebar .sidebar-scrollbox {
     padding-top: 15px;
@@ -21,20 +36,7 @@
     font-weight: 600;
 }
 
-/* API badge link in sidebar */
-.api-link-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, #0d9488, #2563eb);
-    color: #ffffff !important;
-    padding: 2px 8px;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-left: 6px;
-    vertical-align: middle;
-}
-
-/* Content block improvements */
+/* Content table styling */
 .content main table {
     border-collapse: collapse;
     width: 100%;
@@ -52,6 +54,16 @@
 .content main table td {
     padding: 10px 14px;
     border-bottom: 1px solid rgba(125, 125, 125, 0.2);
+}
+
+/* Blockquote enhancement */
+blockquote {
+    border-left: 4px solid var(--primary-color);
+    padding: 12px 20px;
+    margin: 20px 0;
+    background-color: rgba(13, 148, 136, 0.06);
+    border-radius: 0 8px 8px 0;
+    font-size: 1.05em;
 }
 
 /* Mermaid diagram container */

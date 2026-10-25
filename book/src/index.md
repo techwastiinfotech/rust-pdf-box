@@ -1,16 +1,19 @@
-# Welcome to rust-pdf-box
+# rust-pdf-box Documentation
 
-<div align="center">
+> **A comprehensive, pure Rust implementation of Apache PDFBox featuring modern, context-oriented, and ergonomic PDF processing.**
 
-[![CI](https://github.com/techwastiinfotech/rust-pdf-box/actions/workflows/ci.yml/badge.svg)](https://github.com/techwastiinfotech/rust-pdf-box/actions)
-[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-teal.svg)](https://techwastiinfotech.github.io/rust-pdf-box)
-[![Crates.io](https://img.shields.io/crates/v/rust-pdf-box.svg)](https://crates.io/crates/rust-pdf-box)
-[![Docs.rs](https://docs.rs/rust-pdf-box/badge.svg)](https://docs.rs/rust-pdf-box)
-[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](#license)
-[![Rust 2024](https://img.shields.io/badge/rust-2024%20edition-orange.svg)](#)
-[![Maintained by Techwasti](https://img.shields.io/badge/maintained%20by-techwasti%20infotech-teal.svg)](https://techwasti.com)
+---
 
-**A comprehensive, pure Rust implementation of Apache PDFBox featuring modern, context-oriented, and ergonomic PDF processing.**
+<div class="hero-banner">
+
+### 🚀 Get Started Immediately
+
+| Resource | Description | Link |
+| :--- | :--- | :--- |
+| **Quick Start** | 5-minute tutorial to create, stamp, and sign PDFs | [Read Guide →](quickstart.md) |
+| **CLI Utility** | Standalone `pdfbox` command-line utility reference | [CLI Reference →](cli.md) |
+| **System Architecture** | Multi-layer COS, PD, content stream, and crypto diagrams | [View Architecture →](architecture.md) |
+| **API Documentation** | Full Rustdoc crate reference with all types and traits | [Browse Rustdoc →](api/rust_pdf_box/index.html) |
 
 </div>
 
@@ -18,34 +21,44 @@
 
 ## What is rust-pdf-box?
 
-`rust-pdf-box` is an open-source, pure Rust library bringing the full feature set of **Apache PDFBox** into modern Rust with zero external C/C++ or OpenSSL dependencies.
+`rust-pdf-box` is an open-source, pure Rust library bringing the full feature set of **Apache PDFBox** into modern Rust with **zero external C/C++ or OpenSSL dependencies**.
 
-Designed and maintained by **Techwasti Infotech**, `rust-pdf-box` eliminates the boilerplate typical of low-level PDF manipulation. It provides a simple, context-oriented facade that makes common, high-demand operations—such as **digital signing with ISO 32000 compliance**, **watermarking**, **rubber stamping**, **interactive AcroForm processing**, and **document merging/splitting**—straightforward and reliable.
-
----
-
-## Highlights & Capabilities
-
-- **Pure Rust Cryptography & Digital Signatures**:
-  Full ISO 32000 detached PKCS#7 / CMS digital signatures (`/adbe.pkcs7.detached`, `/ETSI.CAdES.detached`) with built-in self-signed certificate generation (`SigningKey::generate_self_signed(...)`) or external PKCS#8/PEM key loading.
-- **Context-Oriented Stamping & Watermarking**:
-  Fluent builder API for watermarks, rubber stamps, running headers/footers, and bates numbering. Supports multi-page range targeting (`PageRange::All`, `PageRange::Odd`, `PageRange::Even`, `PageRange::Range(1..=5)`).
-- **Interactive Forms (AcroForms) & Annotations**:
-  Form field inspection, value editing, checkbox/radio toggles, and form flattening. Clickable hyperlink annotations (`/Link`) and visual markups.
-- **Content Stream Engine**:
-  Vector path construction & painting, transparency/alpha, RGB/CMYK colors, standard Type 1 fonts (Helvetica, Times, Courier, etc.), TrueType font embedding, and image embedding (JPEG `/DCTDecode` passthrough and PNG with `/SMask` soft mask).
-- **Document Assembly & Text Extraction**:
-  Merge multiple PDF files with collision-free object ID remapping, split PDFs into ranges or single pages, and extract clean UTF-8 text with position metrics via `PDFTextStripper`.
-- **Standalone CLI Utility (`pdfbox`)**:
-  Pre-compiled standalone binaries for Linux, macOS, and Windows to inspect, sign, watermark, stamp, merge, split, and extract text without needing Rust installed.
+Designed and maintained by **Techwasti Infotech**, `rust-pdf-box` eliminates the boilerplate typical of low-level PDF manipulation. It provides a simple, context-oriented facade that makes common, high-demand operations—such as **digital signing with ISO 32000 compliance**, **watermarking**, **rubber stamping**, **interactive AcroForm processing**, and **document merging/splitting**—straightforward, fast, and reliable.
 
 ---
 
-## Navigating this Documentation
+## Core Feature Guides
 
-- **[Quick Start](quickstart.md)**: Add the crate to your project and build your first PDF in minutes.
-- **[Command Line Utility (CLI)](cli.md)**: Explore the standalone `pdfbox` command-line utility.
-- **[System Architecture](architecture.md)**: Understand the COS object layer, PD model, content stream engine, and crypto subsystem.
-- **[Feature Guides](stamping-and-watermarking.md)**: Deep dives into stamping, digital signatures, AcroForms, merging/splitting, and text extraction.
-- **[Migration Guide](migration-guide.md)**: Detailed cheat sheet and side-by-side code comparisons for Java Apache PDFBox developers.
-- **[Rustdoc API Reference](api-reference.md)**: Access the complete generated API reference with every struct, method, and trait.
+- 📑 **[Stamping & Watermarking](stamping-and-watermarking.md)**  
+  Apply semi-transparent diagonal watermarks, official rubber stamps, headers, and footers across page ranges with dynamic `{page}` and `{total}` substitutions.
+
+- 🔒 **[Digital Signatures (ISO 32000 PKCS#7 / CMS)](digital-signatures.md)**  
+  Pure-Rust detached PKCS#7 signing, built-in X.509 v3 self-signed certificate generation, visual signature appearances, and cryptographic tamper verification.
+
+- 📝 **[Interactive Forms (AcroForms) & Annotations](acroforms-and-annotations.md)**  
+  Inspect, update, and flatten interactive form fields (`/Tx`, `/Btn`, `/Ch`, `/Sig`), and attach clickable hyperlink annotations (`/Link`).
+
+- 🗂️ **[Document Assembly](assembly-and-manipulation.md)**  
+  Merge multiple PDF documents with automatic conflict-free object ID remapping, split into single pages, or rotate pages.
+
+- 🔍 **[Text Extraction](text-extraction.md)**  
+  Extract UTF-8 text from PDF content streams with accurate layout reconstruction using `PDFTextStripper`.
+
+- 🔄 **[Apache PDFBox Migration Guide](migration-guide.md)**  
+  Class-by-class comparison, memory safety advantages, and side-by-side Java vs. Rust code samples.
+
+- 🏢 **[Enterprise Integration & Artifacts](enterprise-integration.md)**  
+  Guidance for Python, Node.js, Docker, pre-compiled platform binaries, and CI/CD pipelines.
+
+- 📚 **[Full Rustdoc API Reference](api/rust_pdf_box/index.html)**  
+  Complete auto-generated Rust documentation covering every module, function, and struct.
+
+---
+
+## Project Links & Community
+
+- **GitHub Repository**: [techwastiinfotech/rust-pdf-box](https://github.com/techwastiinfotech/rust-pdf-box)
+- **Crates.io Package**: [crates.io/crates/rust-pdf-box](https://crates.io/crates/rust-pdf-box)
+- **Docs.rs Reference**: [docs.rs/rust-pdf-box](https://docs.rs/rust-pdf-box)
+- **License**: MIT or Apache-2.0
+- **Maintained by**: [Techwasti Infotech](https://techwasti.com)

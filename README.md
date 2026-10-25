@@ -1,26 +1,28 @@
 # rust-pdf-box
 
-<div align="center">
+<p align="center">
+  <a href="https://github.com/techwastiinfotech/rust-pdf-box/actions"><img src="https://github.com/techwastiinfotech/rust-pdf-box/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://techwastiinfotech.github.io/rust-pdf-box"><img src="https://img.shields.io/badge/docs-GitHub%20Pages-teal.svg" alt="Documentation" /></a>
+  <a href="https://crates.io/crates/rust-pdf-box"><img src="https://img.shields.io/crates/v/rust-pdf-box.svg" alt="Crates.io" /></a>
+  <a href="https://docs.rs/rust-pdf-box"><img src="https://docs.rs/rust-pdf-box/badge.svg" alt="Docs.rs" /></a>
+  <a href="#license"><img src="https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg" alt="License" /></a>
+  <img src="https://img.shields.io/badge/rust-2024%20edition-orange.svg" alt="Rust 2024" />
+  <a href="https://techwasti.com"><img src="https://img.shields.io/badge/maintained%20by-techwasti%20infotech-teal.svg" alt="Maintained by Techwasti" /></a>
+</p>
 
-[![CI](https://github.com/techwastiinfotech/rust-pdf-box/actions/workflows/ci.yml/badge.svg)](https://github.com/techwastiinfotech/rust-pdf-box/actions)
-[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-teal.svg)](https://techwastiinfotech.github.io/rust-pdf-box)
-[![Crates.io](https://img.shields.io/crates/v/rust-pdf-box.svg)](https://crates.io/crates/rust-pdf-box)
-[![Docs.rs](https://docs.rs/rust-pdf-box/badge.svg)](https://docs.rs/rust-pdf-box)
-[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](#license)
-[![Rust 2024](https://img.shields.io/badge/rust-2024%20edition-orange.svg)](#)
-[![Maintained by Techwasti](https://img.shields.io/badge/maintained%20by-techwasti%20infotech-teal.svg)](https://techwasti.com)
+<p align="center">
+  <strong>A comprehensive, pure Rust implementation of Apache PDFBox featuring modern, context-oriented, and ergonomic PDF processing.</strong>
+</p>
 
-**A comprehensive, pure Rust implementation of Apache PDFBox featuring modern, context-oriented, and ergonomic PDF processing.**
-
-[Documentation Book](https://techwastiinfotech.github.io/rust-pdf-box) •
-[API Reference](https://techwastiinfotech.github.io/rust-pdf-box/api/rust_pdf_box/index.html) •
-[Key Features](#key-features) •
-[Quick Start](#quick-start) •
-[Architecture](#documentation--guides) •
-[Examples](#examples--sample-pdfs) •
-[Contributing](#contributing)
-
-</div>
+<p align="center">
+  <a href="https://techwastiinfotech.github.io/rust-pdf-box"><strong>📖 Documentation Book</strong></a> •
+  <a href="https://techwastiinfotech.github.io/rust-pdf-box/api/rust_pdf_box/index.html"><strong>📚 API Reference</strong></a> •
+  <a href="#key-features">Key Features</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#documentation--guides">Architecture</a> •
+  <a href="#examples--sample-pdfs">Examples</a> •
+  <a href="#contributing">Contributing</a>
+</p>
 
 ---
 
