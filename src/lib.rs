@@ -2,21 +2,33 @@ pub mod content;
 pub mod cos;
 pub mod crypto;
 pub mod error;
+pub mod facade;
 pub mod font;
 pub mod image;
+pub mod interactive;
+pub mod manipulation;
 pub mod pd;
+pub mod prelude;
 pub mod sign;
 pub mod stamp;
+pub mod text;
 
 pub use content::{AppendMode, Color, PDPageContentStream};
 pub use cos::{COSDocument, COSDictionary, COSArray, COSObject, COSStream, COSString, COSName, ObjectId};
 pub use crypto::{DerElement, SigningKey};
 pub use error::{PdfError, PdfResult};
+pub use facade::PdfDocument;
 pub use font::{PDTrueTypeFont, PDType1Font};
 pub use image::PDImageXObject;
+pub use interactive::annotation::{AnnotationType, PDAnnotation};
+pub use interactive::form::{FieldType, PDAcroForm, PDFormField};
+pub use manipulation::merger::PDFMerger;
+pub use manipulation::page_ops::PageOps;
+pub use manipulation::splitter::PDFSplitter;
 pub use pd::{PDDocument, PDPage, PDRectangle, PDResources, PDDocumentInformation, PDDocumentCatalog};
 pub use sign::{SignatureReport, SignatureVerifier, Signer, VisualSignature};
 pub use stamp::{PageRange, StampLayer, StampPosition, Stamper};
+pub use text::stripper::PDFTextStripper;
 
 #[cfg(test)]
 mod tests {
@@ -191,5 +203,68 @@ mod tests {
         assert_eq!(report.signer_name, Some("Techwasti Infotech".to_string()));
         assert_eq!(report.reason, Some("Contract Agreement Verification".to_string()));
         assert_eq!(report.location, Some("India".to_string()));
+    }
+
+    #[test]
+    fn test_text_extraction() {
+        let mut doc = PdfDocument::create();
+        doc.add_blank_page(PDRectangle::A4);
+
+        doc.draw_on_page(0, AppendMode::Overwrite, |stream, doc_inner| {
+            stream.begin_text();
+            stream.set_font_type1(doc_inner, 0, PDType1Font::HelveticaBold, 16.0);
+            stream.show_text_at("Hello World from Apache PDFBox in Rust!", 50.0, 700.0);
+            stream.end_text();
+            Ok(())
+        }).expect("draw failed");
+
+        let extracted = doc.extract_text().expect("extraction failed");
+        assert!(extracted.contains("Hello World from Apache PDFBox in Rust!"));
+    }
+
+    #[test]
+    fn test_pdf_merger_and_splitter() {
+        let mut doc1 = PdfDocument::create();
+        doc1.add_blank_page(PDRectangle::A4);
+        doc1.add_blank_page(PDRectangle::A4);
+
+        let mut doc2 = PdfDocument::create();
+        doc2.add_blank_page(PDRectangle::LETTER);
+
+        doc1.merge(&doc2).expect("merge failed");
+        assert_eq!(doc1.page_count(), 3);
+
+        let split_docs = doc1.split_single_pages().expect("split failed");
+        assert_eq!(split_docs.len(), 3);
+        assert_eq!(split_docs[0].page_count(), 1);
+        assert_eq!(split_docs[1].page_count(), 1);
+        assert_eq!(split_docs[2].page_count(), 1);
+    }
+
+    #[test]
+    fn test_fluent_facade_api() {
+        let mut doc = PdfDocument::create();
+        doc.set_title("Invoice #1042")
+           .set_author("Techwasti Infotech");
+
+        doc.add_blank_page(PDRectangle::A4);
+
+        // Fluent watermark
+        doc.watermark("PAID").expect("watermark failed");
+
+        // Simple text drawing
+        doc.draw_on_page(0, AppendMode::Append, |stream, doc_inner| {
+            stream.begin_text();
+            stream.set_font_type1(doc_inner, 0, PDType1Font::Helvetica, 14.0);
+            stream.show_text_at("Invoice Total: $1,250.00 USD", 50.0, 750.0);
+            stream.end_text();
+            Ok(())
+        }).expect("draw failed");
+
+        // Verify serialization
+        let bytes = doc.to_bytes().expect("to_bytes failed");
+        let reloaded = PdfDocument::open_from_bytes(&bytes).expect("open failed");
+        assert_eq!(reloaded.page_count(), 1);
+        assert_eq!(reloaded.inner.info.title(), Some("Invoice #1042".to_string()));
     }
 }
