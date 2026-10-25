@@ -235,4 +235,9 @@ impl PDDocument {
         let mut cos_writer = Writer::with_offset(writer, prev_bytes.len());
         cos_writer.write_incremental_update(&self.cos_doc, prev_startxref)
     }
+
+    /// Creates a fluent Stamper for watermarking, headers/footers, and rubber stamps.
+    pub fn stamp(&self) -> crate::stamp::Stamper {
+        crate::stamp::Stamper::new()
+    }
 }

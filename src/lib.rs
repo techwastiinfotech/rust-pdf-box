@@ -4,6 +4,7 @@ pub mod error;
 pub mod font;
 pub mod image;
 pub mod pd;
+pub mod stamp;
 
 pub use content::{AppendMode, Color, PDPageContentStream};
 pub use cos::{COSDocument, COSDictionary, COSArray, COSObject, COSStream, COSString, COSName, ObjectId};
@@ -11,6 +12,7 @@ pub use error::{PdfError, PdfResult};
 pub use font::{PDTrueTypeFont, PDType1Font};
 pub use image::PDImageXObject;
 pub use pd::{PDDocument, PDPage, PDRectangle, PDResources, PDDocumentInformation, PDDocumentCatalog};
+pub use stamp::{PageRange, StampLayer, StampPosition, Stamper};
 
 #[cfg(test)]
 mod tests {
@@ -114,5 +116,42 @@ mod tests {
         assert_eq!(loaded.page_count(), 1);
         let loaded_page = loaded.get_page(0).unwrap();
         assert!(!loaded_page.content_stream_ids().is_empty());
+    }
+
+    #[test]
+    fn test_stamping_watermark_and_rubber_stamp() {
+        let mut doc = PDDocument::new();
+        doc.add_page(PDPage::new(PDRectangle::A4));
+        doc.add_page(PDPage::new(PDRectangle::A4));
+
+        // 1. Watermark under content on all pages
+        doc.stamp()
+            .pages(PageRange::All)
+            .watermark("CONFIDENTIAL", 50.0, Color::rgb(0.9, 0.1, 0.1), 45.0, 0.2)
+            .apply(&mut doc)
+            .expect("watermark failed");
+
+        // 2. Rubber stamp over content on page 1
+        doc.stamp()
+            .pages(PageRange::Single(1))
+            .position(StampPosition::TopRight { margin_x: 36.0, margin_y: 36.0 })
+            .rubber_stamp("APPROVED", Some("Techwasti Infotech".to_string()), Color::rgb(0.0, 0.6, 0.2), -15.0)
+            .apply(&mut doc)
+            .expect("rubber stamp failed");
+
+        // 3. Header and Footer
+        doc.stamp()
+            .pages(PageRange::All)
+            .header("Document - Page {page} of {total}", StampPosition::TopCenter { margin_y: 20.0 }, 10.0, Color::GRAY)
+            .apply(&mut doc)
+            .expect("header failed");
+
+        let mut buf = Vec::new();
+        doc.save_to_writer(&mut buf).expect("save failed");
+
+        let loaded = PDDocument::load_from_bytes(&buf).expect("load failed");
+        assert_eq!(loaded.page_count(), 2);
+        assert!(loaded.get_page(0).unwrap().content_stream_ids().len() >= 3);
+        assert!(loaded.get_page(1).unwrap().content_stream_ids().len() >= 2);
     }
 }
