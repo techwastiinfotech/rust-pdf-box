@@ -35,7 +35,7 @@ Designed by **Techwasti Infotech** for high-performance PDF manipulation, easy v
 
 ## Quick Start
 
-### Simple Stamping
+### Simple Stamping & Watermarking
 
 ```rust
 use rust_pdf_box::prelude::*;
@@ -43,22 +43,31 @@ use rust_pdf_box::prelude::*;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut doc = PdfDocument::open("input.pdf")?;
 
+    // 1. Semi-transparent background watermark
     doc.stamp()
         .pages(PageRange::All)
-        .watermark("CONFIDENTIAL")
-        .font_size(54.0)
-        .opacity(0.25)
-        .rotation(45.0)
-        .color(Color::rgb(0.85, 0.1, 0.1))
-        .layer(StampLayer::UnderContent)
-        .apply()?;
+        .watermark("CONFIDENTIAL", 54.0, Color::rgb(0.85, 0.1, 0.1), 45.0, 0.25)
+        .apply(&mut doc.inner)?;
+
+    // 2. Rubber stamp foreground overlay
+    doc.stamp()
+        .pages(PageRange::Single(1))
+        .position(StampPosition::TopRight { margin_x: 36.0, margin_y: 36.0 })
+        .rubber_stamp("APPROVED", Some("Techwasti Security".to_string()), Color::rgb(0.0, 0.6, 0.2), -15.0)
+        .apply(&mut doc.inner)?;
+
+    // 3. Dynamic Header / Footer with page numbers
+    doc.stamp()
+        .pages(PageRange::All)
+        .header("Document - Page {page} of {total}", StampPosition::TopCenter { margin_y: 20.0 }, 10.0, Color::GRAY)
+        .apply(&mut doc.inner)?;
 
     doc.save("stamped.pdf")?;
     Ok(())
 }
 ```
 
-### Easy Digital Signing
+### Easy Digital Signing in Pure Rust
 
 ```rust
 use rust_pdf_box::prelude::*;
@@ -66,23 +75,54 @@ use rust_pdf_box::prelude::*;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut doc = PdfDocument::open("contract.pdf")?;
 
-    // Generate or load a signing key
+    // Generate or load an X.509 signing key (zero external CLI setup required!)
     let key = SigningKey::generate_self_signed("CN=Techwasti, O=Techwasti Infotech")?;
 
     let signer = Signer::new(key)
         .with_name("Techwasti Infotech")
-        .with_reason("Contract Agreement")
+        .with_reason("Contract Agreement Execution")
         .with_location("India")
         .with_visual_stamp(
             VisualSignature::at_page(1)
-                .rect(72.0, 72.0, 260.0, 140.0)
-                .title("Digitally Signed")
-                .detail("Signer: Techwasti Infotech\nDate: 2026-10-25\nStatus: Verified")
+                .rect(50.0, 50.0, 280.0, 130.0)
+                .title("Digitally Signed by Techwasti")
+                .detail("Signer: Techwasti Authorized\nDate: 2026-10-25\nStatus: Cryptographically Verified")
         );
 
-    doc.sign(signer, "contract_signed.pdf")?;
+    let signed_bytes = doc.sign(signer)?;
+    std::fs::write("contract_signed.pdf", &signed_bytes)?;
+
+    // Verify digital signature
+    let report = SignatureVerifier::verify(&signed_bytes)?;
+    println!("Signature valid: {}", report.is_valid);
     Ok(())
 }
+```
+
+### Text Extraction & PDF Merging
+
+```rust
+use rust_pdf_box::prelude::*;
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let doc1 = PdfDocument::open("doc1.pdf")?;
+    let text = doc1.extract_text()?;
+    println!("Extracted Text:\n{}", text);
+
+    let mut combined = PdfDocument::create();
+    let doc2 = PdfDocument::open("doc2.pdf")?;
+    combined.merge(&doc1)?;
+    combined.merge(&doc2)?;
+    combined.save("merged.pdf")?;
+    Ok(())
+}
+```
+
+## Running Examples
+
+```bash
+cargo run --example stamping_demo
+cargo run --example digital_signature_demo
 ```
 
 ## License
