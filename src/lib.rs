@@ -1,3 +1,16 @@
+#![allow(
+    clippy::collapsible_if,
+    clippy::collapsible_match,
+    clippy::manual_rem_euclid,
+    clippy::manual_is_multiple_of,
+    clippy::too_many_arguments,
+    clippy::type_complexity,
+    clippy::approx_constant,
+    clippy::new_without_default,
+    clippy::chunks_exact_to_as_chunks,
+    clippy::manual_is_ascii_check
+)]
+
 pub mod content;
 pub mod cos;
 pub mod crypto;
@@ -14,7 +27,9 @@ pub mod stamp;
 pub mod text;
 
 pub use content::{AppendMode, Color, PDPageContentStream};
-pub use cos::{COSDocument, COSDictionary, COSArray, COSObject, COSStream, COSString, COSName, ObjectId};
+pub use cos::{
+    COSArray, COSDictionary, COSDocument, COSName, COSObject, COSStream, COSString, ObjectId,
+};
 pub use crypto::{DerElement, SigningKey};
 pub use error::{PdfError, PdfResult};
 pub use facade::PdfDocument;
@@ -25,7 +40,9 @@ pub use interactive::form::{FieldType, PDAcroForm, PDFormField};
 pub use manipulation::merger::PDFMerger;
 pub use manipulation::page_ops::PageOps;
 pub use manipulation::splitter::PDFSplitter;
-pub use pd::{PDDocument, PDPage, PDRectangle, PDResources, PDDocumentInformation, PDDocumentCatalog};
+pub use pd::{
+    PDDocument, PDDocumentCatalog, PDDocumentInformation, PDPage, PDRectangle, PDResources,
+};
 pub use sign::{SignatureReport, SignatureVerifier, Signer, VisualSignature};
 pub use stamp::{PageRange, StampLayer, StampPosition, Stamper};
 pub use text::stripper::PDFTextStripper;
@@ -33,8 +50,8 @@ pub use text::stripper::PDFTextStripper;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use cos::Writer;
     use cos::Parser;
+    use cos::Writer;
 
     #[test]
     fn test_cos_roundtrip() {
@@ -67,11 +84,18 @@ mod tests {
         assert_eq!(resolved_cat.get_name("Type"), Some("Catalog"));
         assert_eq!(resolved_cat.get_integer("TestNum"), Some(42));
         assert_eq!(
-            resolved_cat.get_string("TestString").unwrap().to_string_lossy(),
+            resolved_cat
+                .get_string("TestString")
+                .unwrap()
+                .to_string_lossy(),
             "Hello (World)!"
         );
         assert_eq!(
-            resolved_cat.get_string("TestHex").unwrap().as_str().unwrap(),
+            resolved_cat
+                .get_string("TestHex")
+                .unwrap()
+                .as_str()
+                .unwrap(),
             "Techwasti"
         );
     }
@@ -150,15 +174,28 @@ mod tests {
         // 2. Rubber stamp over content on page 1
         doc.stamp()
             .pages(PageRange::Single(1))
-            .position(StampPosition::TopRight { margin_x: 36.0, margin_y: 36.0 })
-            .rubber_stamp("APPROVED", Some("Techwasti Infotech".to_string()), Color::rgb(0.0, 0.6, 0.2), -15.0)
+            .position(StampPosition::TopRight {
+                margin_x: 36.0,
+                margin_y: 36.0,
+            })
+            .rubber_stamp(
+                "APPROVED",
+                Some("Techwasti Infotech".to_string()),
+                Color::rgb(0.0, 0.6, 0.2),
+                -15.0,
+            )
             .apply(&mut doc)
             .expect("rubber stamp failed");
 
         // 3. Header and Footer
         doc.stamp()
             .pages(PageRange::All)
-            .header("Document - Page {page} of {total}", StampPosition::TopCenter { margin_y: 20.0 }, 10.0, Color::GRAY)
+            .header(
+                "Document - Page {page} of {total}",
+                StampPosition::TopCenter { margin_y: 20.0 },
+                10.0,
+                Color::GRAY,
+            )
             .apply(&mut doc)
             .expect("header failed");
 
@@ -201,7 +238,10 @@ mod tests {
         let report = SignatureVerifier::verify(&signed_bytes).expect("verification failed");
         assert!(report.is_valid);
         assert_eq!(report.signer_name, Some("Techwasti Infotech".to_string()));
-        assert_eq!(report.reason, Some("Contract Agreement Verification".to_string()));
+        assert_eq!(
+            report.reason,
+            Some("Contract Agreement Verification".to_string())
+        );
         assert_eq!(report.location, Some("India".to_string()));
     }
 
@@ -216,7 +256,8 @@ mod tests {
             stream.show_text_at("Hello World from Apache PDFBox in Rust!", 50.0, 700.0);
             stream.end_text();
             Ok(())
-        }).expect("draw failed");
+        })
+        .expect("draw failed");
 
         let extracted = doc.extract_text().expect("extraction failed");
         assert!(extracted.contains("Hello World from Apache PDFBox in Rust!"));
@@ -245,7 +286,7 @@ mod tests {
     fn test_fluent_facade_api() {
         let mut doc = PdfDocument::create();
         doc.set_title("Invoice #1042")
-           .set_author("Techwasti Infotech");
+            .set_author("Techwasti Infotech");
 
         doc.add_blank_page(PDRectangle::A4);
 
@@ -259,12 +300,16 @@ mod tests {
             stream.show_text_at("Invoice Total: $1,250.00 USD", 50.0, 750.0);
             stream.end_text();
             Ok(())
-        }).expect("draw failed");
+        })
+        .expect("draw failed");
 
         // Verify serialization
         let bytes = doc.to_bytes().expect("to_bytes failed");
         let reloaded = PdfDocument::open_from_bytes(&bytes).expect("open failed");
         assert_eq!(reloaded.page_count(), 1);
-        assert_eq!(reloaded.inner.info.title(), Some("Invoice #1042".to_string()));
+        assert_eq!(
+            reloaded.inner.info.title(),
+            Some("Invoice #1042".to_string())
+        );
     }
 }

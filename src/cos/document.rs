@@ -74,9 +74,7 @@ impl COSDocument {
 
     /// Resolves a reference or returns error if not found.
     pub fn get_resolved(&self, id: ObjectId) -> PdfResult<&COSObject> {
-        self.objects
-            .get(&id)
-            .ok_or(PdfError::InvalidReference(id))
+        self.objects.get(&id).ok_or(PdfError::InvalidReference(id))
     }
 
     /// Gets the Document Catalog dictionary (/Root).

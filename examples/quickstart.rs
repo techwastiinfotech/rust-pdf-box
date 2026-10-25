@@ -6,7 +6,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 1. Create a document
     let mut doc = PdfDocument::create();
     doc.set_title("My First Rust PDF")
-       .set_author("Techwasti Infotech");
+        .set_author("Techwasti Infotech");
 
     // 2. Add an A4 page
     let page_idx = doc.add_blank_page(PDRectangle::A4);

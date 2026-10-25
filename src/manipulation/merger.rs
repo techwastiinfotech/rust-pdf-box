@@ -36,7 +36,10 @@ impl PDFMerger {
 
         // 3. Add remapped pages to target
         for src_page in source.pages() {
-            let mut new_page_dict = if let Some(dict_obj) = src_page.page_id.and_then(|id| source.cos_doc.get_object(id)) {
+            let mut new_page_dict = if let Some(dict_obj) = src_page
+                .page_id
+                .and_then(|id| source.cos_doc.get_object(id))
+            {
                 if let Some(d) = dict_obj.as_dict() {
                     Self::remap_dictionary(d, &id_map)
                 } else {

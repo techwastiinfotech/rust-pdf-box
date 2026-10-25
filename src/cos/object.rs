@@ -1,7 +1,7 @@
 use crate::error::{PdfError, PdfResult};
+use flate2::Compression;
 use flate2::read::ZlibDecoder;
 use flate2::write::ZlibEncoder;
-use flate2::Compression;
 use std::collections::BTreeMap;
 use std::fmt;
 use std::io::{Read, Write};
@@ -271,8 +271,10 @@ impl COSStream {
     }
 
     pub fn update_length(&mut self) {
-        self.dict
-            .set(COSName::new("Length"), COSObject::Integer(self.data.len() as i64));
+        self.dict.set(
+            COSName::new("Length"),
+            COSObject::Integer(self.data.len() as i64),
+        );
     }
 
     /// Decodes stream contents based on /Filter entries.
@@ -283,12 +285,14 @@ impl COSStream {
             Some("FlateDecode") => {
                 let mut decoder = ZlibDecoder::new(&self.data[..]);
                 let mut decoded = Vec::new();
-                decoder
-                    .read_to_end(&mut decoded)
-                    .map_err(|e| PdfError::StreamCompression(format!("Flate decompression error: {e}")))?;
+                decoder.read_to_end(&mut decoded).map_err(|e| {
+                    PdfError::StreamCompression(format!("Flate decompression error: {e}"))
+                })?;
                 Ok(decoded)
             }
-            Some(other) => Err(PdfError::Unsupported(format!("Unsupported stream filter: {other}"))),
+            Some(other) => Err(PdfError::Unsupported(format!(
+                "Unsupported stream filter: {other}"
+            ))),
         }
     }
 
@@ -298,12 +302,13 @@ impl COSStream {
         encoder
             .write_all(&self.data)
             .map_err(|e| PdfError::StreamCompression(format!("Flate compression error: {e}")))?;
-        let compressed = encoder
-            .finish()
-            .map_err(|e| PdfError::StreamCompression(format!("Flate compression finish error: {e}")))?;
+        let compressed = encoder.finish().map_err(|e| {
+            PdfError::StreamCompression(format!("Flate compression finish error: {e}"))
+        })?;
 
         self.data = compressed;
-        self.dict.set(COSName::new("Filter"), COSName::new("FlateDecode"));
+        self.dict
+            .set(COSName::new("Filter"), COSName::new("FlateDecode"));
         self.update_length();
         Ok(())
     }

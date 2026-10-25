@@ -258,7 +258,10 @@ impl Stamper {
                     let title_w = font.get_string_width(title, title_font_size);
 
                     let sub_font_size = 9.0;
-                    let sub_w = subtitle.as_ref().map(|s| font.get_string_width(s, sub_font_size)).unwrap_or(0.0);
+                    let sub_w = subtitle
+                        .as_ref()
+                        .map(|s| font.get_string_width(s, sub_font_size))
+                        .unwrap_or(0.0);
 
                     let stamp_w = title_w.max(sub_w) + 36.0;
                     let stamp_h = if subtitle.is_some() { 56.0 } else { 38.0 };
@@ -288,7 +291,11 @@ impl Stamper {
                     stream.begin_text();
                     stream.set_font_type1(doc, page_idx, font, title_font_size);
                     stream.set_fill_color(*text_color);
-                    let title_y = if subtitle.is_some() { y + 26.0 } else { y + 12.0 };
+                    let title_y = if subtitle.is_some() {
+                        y + 26.0
+                    } else {
+                        y + 12.0
+                    };
                     stream.show_text_at(title, x + (stamp_w - title_w) / 2.0, title_y);
                     stream.end_text();
 
@@ -370,34 +377,21 @@ impl Stamper {
         element_h: f64,
     ) -> (f64, f64) {
         match pos {
-            StampPosition::Center => (
-                (page_w - element_w) / 2.0,
-                (page_h - element_h) / 2.0,
-            ),
-            StampPosition::TopLeft { margin_x, margin_y } => (
-                margin_x,
-                page_h - margin_y - element_h,
-            ),
-            StampPosition::TopCenter { margin_y } => (
-                (page_w - element_w) / 2.0,
-                page_h - margin_y - element_h,
-            ),
-            StampPosition::TopRight { margin_x, margin_y } => (
-                page_w - margin_x - element_w,
-                page_h - margin_y - element_h,
-            ),
-            StampPosition::BottomLeft { margin_x, margin_y } => (
-                margin_x,
-                margin_y,
-            ),
-            StampPosition::BottomCenter { margin_y } => (
-                (page_w - element_w) / 2.0,
-                margin_y,
-            ),
-            StampPosition::BottomRight { margin_x, margin_y } => (
-                page_w - margin_x - element_w,
-                margin_y,
-            ),
+            StampPosition::Center => ((page_w - element_w) / 2.0, (page_h - element_h) / 2.0),
+            StampPosition::TopLeft { margin_x, margin_y } => {
+                (margin_x, page_h - margin_y - element_h)
+            }
+            StampPosition::TopCenter { margin_y } => {
+                ((page_w - element_w) / 2.0, page_h - margin_y - element_h)
+            }
+            StampPosition::TopRight { margin_x, margin_y } => {
+                (page_w - margin_x - element_w, page_h - margin_y - element_h)
+            }
+            StampPosition::BottomLeft { margin_x, margin_y } => (margin_x, margin_y),
+            StampPosition::BottomCenter { margin_y } => ((page_w - element_w) / 2.0, margin_y),
+            StampPosition::BottomRight { margin_x, margin_y } => {
+                (page_w - margin_x - element_w, margin_y)
+            }
             StampPosition::Custom { x, y } => (x, y),
         }
     }

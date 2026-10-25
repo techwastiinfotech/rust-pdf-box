@@ -100,17 +100,20 @@ impl PDDocument {
 
     /// Gets a page reference by 0-based index.
     pub fn get_page(&self, index: usize) -> PdfResult<&PDPage> {
-        self.pages
-            .get(index)
-            .ok_or_else(|| PdfError::PageOperation(format!("Page index {index} out of bounds (count {})", self.pages.len())))
+        self.pages.get(index).ok_or_else(|| {
+            PdfError::PageOperation(format!(
+                "Page index {index} out of bounds (count {})",
+                self.pages.len()
+            ))
+        })
     }
 
     /// Gets a mutable page reference by 0-based index.
     pub fn get_page_mut(&mut self, index: usize) -> PdfResult<&mut PDPage> {
         let count = self.pages.len();
-        self.pages
-            .get_mut(index)
-            .ok_or_else(|| PdfError::PageOperation(format!("Page index {index} out of bounds (count {count})")))
+        self.pages.get_mut(index).ok_or_else(|| {
+            PdfError::PageOperation(format!("Page index {index} out of bounds (count {count})"))
+        })
     }
 
     /// Appends a new page to the document.
@@ -224,7 +227,11 @@ impl PDDocument {
     }
 
     /// Appends an incremental update to original bytes and writes the result.
-    pub fn save_incremental<W: Write>(&mut self, prev_bytes: &[u8], mut writer: W) -> PdfResult<()> {
+    pub fn save_incremental<W: Write>(
+        &mut self,
+        prev_bytes: &[u8],
+        mut writer: W,
+    ) -> PdfResult<()> {
         self.sync();
         writer.write_all(prev_bytes)?;
 

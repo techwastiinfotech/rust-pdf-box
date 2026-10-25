@@ -19,7 +19,9 @@ impl PDResources {
 
     /// Adds a font reference and returns the font resource name (e.g., "F1").
     pub fn add_font(&mut self, font_ref: ObjectId) -> String {
-        let font_dict = self.dict.entries
+        let font_dict = self
+            .dict
+            .entries
             .entry(COSName::new("Font"))
             .or_insert_with(|| COSObject::Dictionary(COSDictionary::new()));
 
@@ -35,7 +37,9 @@ impl PDResources {
 
     /// Adds an XObject (image or form) reference and returns the resource name (e.g., "Im1").
     pub fn add_xobject(&mut self, prefix: &str, xobj_ref: ObjectId) -> String {
-        let xobj_dict = self.dict.entries
+        let xobj_dict = self
+            .dict
+            .entries
             .entry(COSName::new("XObject"))
             .or_insert_with(|| COSObject::Dictionary(COSDictionary::new()));
 
@@ -51,7 +55,9 @@ impl PDResources {
 
     /// Adds an Extended Graphics State (opacity / alpha) and returns resource name (e.g. "GS1").
     pub fn add_ext_gstate(&mut self, stroke_alpha: f64, fill_alpha: f64) -> String {
-        let gs_dict = self.dict.entries
+        let gs_dict = self
+            .dict
+            .entries
             .entry(COSName::new("ExtGState"))
             .or_insert_with(|| COSObject::Dictionary(COSDictionary::new()));
 

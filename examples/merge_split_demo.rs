@@ -23,7 +23,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 3. Split the merged document back into individual 1-page documents
     println!("\nSplitting merged document into single pages...");
     let single_pages = merged.split_single_pages()?;
-    println!("Successfully split into {} individual documents.", single_pages.len());
+    println!(
+        "Successfully split into {} individual documents.",
+        single_pages.len()
+    );
 
     for (i, mut single_doc) in single_pages.into_iter().enumerate() {
         let output_filename = format!("split_page_{}.pdf", i + 1);

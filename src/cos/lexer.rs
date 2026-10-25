@@ -8,10 +8,10 @@ pub enum Token {
     Real(f64),
     String(Vec<u8>, StringFormat),
     Name(String),
-    DictStart, // <<
-    DictEnd,   // >>
-    ArrayStart,// [
-    ArrayEnd,  // ]
+    DictStart,  // <<
+    DictEnd,    // >>
+    ArrayStart, // [
+    ArrayEnd,   // ]
     EOF,
 }
 
@@ -111,12 +111,8 @@ impl<'a> Lexer<'a> {
                 self.pos += 1;
                 Ok(Token::ArrayEnd)
             }
-            b'(' => {
-                self.read_literal_string(start_pos)
-            }
-            b'/' => {
-                self.read_name()
-            }
+            b'(' => self.read_literal_string(start_pos),
+            b'/' => self.read_name(),
             _ => self.read_number_or_keyword(start_pos),
         }
     }
@@ -127,7 +123,24 @@ impl<'a> Lexer<'a> {
 
         while self.pos < self.data.len() {
             let b = self.data[self.pos];
-            if matches!(b, 0 | 9 | 10 | 12 | 13 | 32 | b'(' | b')' | b'<' | b'>' | b'[' | b']' | b'{' | b'}' | b'/' | b'%') {
+            if matches!(
+                b,
+                0 | 9
+                    | 10
+                    | 12
+                    | 13
+                    | 32
+                    | b'('
+                    | b')'
+                    | b'<'
+                    | b'>'
+                    | b'['
+                    | b']'
+                    | b'{'
+                    | b'}'
+                    | b'/'
+                    | b'%'
+            ) {
                 break;
             }
             if b == b'#' {
@@ -192,7 +205,9 @@ impl<'a> Lexer<'a> {
                         // Octal sequence up to 3 digits
                         let mut oct_val = (esc - b'0') as u32;
                         for _ in 0..2 {
-                            if self.pos < self.data.len() && (b'0'..=b'7').contains(&self.data[self.pos]) {
+                            if self.pos < self.data.len()
+                                && (b'0'..=b'7').contains(&self.data[self.pos])
+                            {
                                 oct_val = oct_val * 8 + (self.data[self.pos] - b'0') as u32;
                                 self.pos += 1;
                             } else {
@@ -235,7 +250,10 @@ impl<'a> Lexer<'a> {
                 break;
             } else if matches!(b, 0 | 9 | 10 | 12 | 13 | 32) {
                 continue;
-            } else if (b'0'..=b'9').contains(&b) || (b'a'..=b'f').contains(&b) || (b'A'..=b'F').contains(&b) {
+            } else if (b'0'..=b'9').contains(&b)
+                || (b'a'..=b'f').contains(&b)
+                || (b'A'..=b'F').contains(&b)
+            {
                 hex_digits.push(b);
             } else {
                 return Err(PdfError::Parse {
@@ -267,7 +285,24 @@ impl<'a> Lexer<'a> {
 
         while self.pos < self.data.len() {
             let b = self.data[self.pos];
-            if matches!(b, 0 | 9 | 10 | 12 | 13 | 32 | b'(' | b')' | b'<' | b'>' | b'[' | b']' | b'{' | b'}' | b'/' | b'%') {
+            if matches!(
+                b,
+                0 | 9
+                    | 10
+                    | 12
+                    | 13
+                    | 32
+                    | b'('
+                    | b')'
+                    | b'<'
+                    | b'>'
+                    | b'['
+                    | b']'
+                    | b'{'
+                    | b'}'
+                    | b'/'
+                    | b'%'
+            ) {
                 break;
             }
             token_bytes.push(b);
@@ -312,7 +347,10 @@ impl<'a> Lexer<'a> {
         // Fallback: search for 'endstream'
         let start = self.pos;
         let pattern = b"endstream";
-        if let Some(idx) = self.data[start..].windows(pattern.len()).position(|w| w == pattern) {
+        if let Some(idx) = self.data[start..]
+            .windows(pattern.len())
+            .position(|w| w == pattern)
+        {
             let mut end = start + idx;
             // Trim trailing \r and \n before endstream
             if end > start && self.data[end - 1] == b'\n' {

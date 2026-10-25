@@ -3,14 +3,14 @@
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DerElement {
     Boolean(bool),
-    Integer(Vec<u8>), // signed big-endian integer bytes
+    Integer(Vec<u8>),       // signed big-endian integer bytes
     BitString(Vec<u8>, u8), // data and unused bits count
     OctetString(Vec<u8>),
     Null,
     ObjectIdentifier(Vec<u64>),
     Utf8String(String),
     PrintableString(String),
-    UtcTime(String), // YYMMDDHHMMSSZ
+    UtcTime(String),         // YYMMDDHHMMSSZ
     GeneralizedTime(String), // YYYYMMDDHHMMSSZ
     Sequence(Vec<DerElement>),
     Set(Vec<DerElement>),

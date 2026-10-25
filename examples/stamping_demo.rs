@@ -5,7 +5,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut doc = PdfDocument::create();
     doc.set_title("Techwasti Invoice & Agreement")
-       .set_author("Techwasti Infotech");
+        .set_author("Techwasti Infotech");
 
     // Add 2 pages
     doc.add_blank_page(PDRectangle::A4);
@@ -46,25 +46,49 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 2. Add diagonal semi-transparent background watermark on all pages
     doc.stamp()
         .pages(PageRange::All)
-        .watermark("CONFIDENTIAL", 56.0, Color::rgb(0.85, 0.15, 0.15), 45.0, 0.18)
+        .watermark(
+            "CONFIDENTIAL",
+            56.0,
+            Color::rgb(0.85, 0.15, 0.15),
+            45.0,
+            0.18,
+        )
         .apply(&mut doc.inner)?;
 
     // 3. Add foreground rubber stamp on page 1
     doc.stamp()
         .pages(PageRange::Single(1))
-        .position(StampPosition::TopRight { margin_x: 40.0, margin_y: 40.0 })
-        .rubber_stamp("VERIFIED", Some("Techwasti Security".to_string()), Color::rgb(0.0, 0.55, 0.2), -12.0)
+        .position(StampPosition::TopRight {
+            margin_x: 40.0,
+            margin_y: 40.0,
+        })
+        .rubber_stamp(
+            "VERIFIED",
+            Some("Techwasti Security".to_string()),
+            Color::rgb(0.0, 0.55, 0.2),
+            -12.0,
+        )
         .apply(&mut doc.inner)?;
 
     // 4. Add header and footer with dynamic page numbering
     doc.stamp()
         .pages(PageRange::All)
-        .header("Techwasti Infotech Confidential - Page {page} of {total}", StampPosition::TopCenter { margin_y: 18.0 }, 9.0, Color::GRAY)
+        .header(
+            "Techwasti Infotech Confidential - Page {page} of {total}",
+            StampPosition::TopCenter { margin_y: 18.0 },
+            9.0,
+            Color::GRAY,
+        )
         .apply(&mut doc.inner)?;
 
     doc.stamp()
         .pages(PageRange::All)
-        .footer("Protected under ISO 32000-1 / rust-pdf-box specification", StampPosition::BottomCenter { margin_y: 18.0 }, 8.0, Color::GRAY)
+        .footer(
+            "Protected under ISO 32000-1 / rust-pdf-box specification",
+            StampPosition::BottomCenter { margin_y: 18.0 },
+            8.0,
+            Color::GRAY,
+        )
         .apply(&mut doc.inner)?;
 
     doc.save("stamped_demo.pdf")?;

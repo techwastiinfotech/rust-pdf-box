@@ -44,9 +44,9 @@ impl PDDocumentCatalog {
             .get_catalog()
             .ok_or_else(|| PdfError::MissingEntry("Root is not a dictionary".to_string()))?;
 
-        let pages_id = cat_dict
-            .get_reference("Pages")
-            .ok_or_else(|| PdfError::MissingEntry("Catalog missing /Pages reference".to_string()))?;
+        let pages_id = cat_dict.get_reference("Pages").ok_or_else(|| {
+            PdfError::MissingEntry("Catalog missing /Pages reference".to_string())
+        })?;
 
         Ok(Self {
             catalog_id,

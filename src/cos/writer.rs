@@ -180,7 +180,12 @@ impl<W: Write> Writer<W> {
     pub fn write_name(&mut self, name: &COSName) -> PdfResult<()> {
         self.write_str("/")?;
         for &b in name.as_str().as_bytes() {
-            if matches!(b, 33..=126) && !matches!(b, b'(' | b')' | b'<' | b'>' | b'[' | b']' | b'{' | b'}' | b'/' | b'%' | b'#') {
+            if matches!(b, 33..=126)
+                && !matches!(
+                    b,
+                    b'(' | b')' | b'<' | b'>' | b'[' | b']' | b'{' | b'}' | b'/' | b'%' | b'#'
+                )
+            {
                 self.write_bytes(&[b])?;
             } else {
                 self.write_str(&format!("#{:02X}", b))?;

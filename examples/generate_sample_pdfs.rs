@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     {
         let mut doc = PdfDocument::create();
         doc.set_title("Architecture of Modern PDF Systems")
-           .set_author("Techwasti Infotech");
+            .set_author("Techwasti Infotech");
 
         doc.add_blank_page(PDRectangle::A4);
         doc.add_blank_page(PDRectangle::A4);
@@ -86,7 +86,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     {
         let mut doc = PdfDocument::create();
         doc.set_title("Invoice #INV-2026-0042")
-           .set_author("Techwasti Infotech");
+            .set_author("Techwasti Infotech");
 
         doc.add_blank_page(PDRectangle::A4);
 

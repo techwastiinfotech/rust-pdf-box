@@ -43,7 +43,8 @@ impl PDAcroForm {
             for item in fields_arr.iter() {
                 if let Some(id) = item.as_reference() {
                     if let Some(COSObject::Dictionary(d)) = doc.cos_doc.get_object(id) {
-                        let name = d.get_string("T")
+                        let name = d
+                            .get_string("T")
                             .map(|s| s.to_string_lossy())
                             .unwrap_or_default();
 
@@ -93,7 +94,9 @@ impl PDAcroForm {
                 }
             }
         }
-        Err(PdfError::MissingEntry(format!("Form field '{name}' not found")))
+        Err(PdfError::MissingEntry(format!(
+            "Form field '{name}' not found"
+        )))
     }
 
     /// Flattens all form fields into page content streams and removes interactive fields.

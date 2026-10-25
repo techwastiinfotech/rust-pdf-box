@@ -1,10 +1,10 @@
 use crate::crypto::asn1::DerElement;
 use crate::error::{PdfError, PdfResult};
 use chrono::{Duration, Utc};
+use rsa::RsaPrivateKey;
 use rsa::pkcs1v15::SigningKey as RsaSigningKey;
 use rsa::signature::{SignatureEncoding, Signer as RsaSignerTrait};
 use rsa::traits::PublicKeyParts;
-use rsa::RsaPrivateKey;
 use sha2::Sha256;
 
 /// A cryptographic signing key and associated X.509 certificate.
@@ -67,7 +67,8 @@ impl SigningKey {
         let rsa_pub_der = DerElement::Sequence(vec![
             DerElement::integer_from_bytes(&n_bytes),
             DerElement::integer_from_bytes(&e_bytes),
-        ]).to_der();
+        ])
+        .to_der();
 
         let spki = DerElement::Sequence(vec![
             DerElement::Sequence(vec![

@@ -7,13 +7,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut doc = PdfDocument::open("tests/fixtures/sample_form.pdf")?;
 
     // 2. Inspect all form fields
-    let acro_form = PDAcroForm::from_doc(&doc.inner)
-        .expect("Document does not contain an AcroForm");
+    let acro_form =
+        PDAcroForm::from_doc(&doc.inner).expect("Document does not contain an AcroForm");
 
     println!("Detected Form Fields:");
     for field in acro_form.fields(&doc.inner) {
-        println!("  -> Name: {:<12} | Type: {:<10?} | Current Value: {:?}", 
-            field.name, field.field_type, field.value);
+        println!(
+            "  -> Name: {:<12} | Type: {:<10?} | Current Value: {:?}",
+            field.name, field.field_type, field.value
+        );
     }
 
     // 3. Programmatically populate form field values

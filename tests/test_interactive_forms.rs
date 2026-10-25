@@ -17,12 +17,19 @@ fn test_acroform_reading_writing_and_flattening() {
 
     // 2. Modify field values
     let mut acro_mut = acro;
-    acro_mut.set_field_value(&mut doc.inner, "full_name", "Nikola Tesla").expect("set full_name");
-    acro_mut.set_field_value(&mut doc.inner, "email", "tesla@techwasti.com").expect("set email");
+    acro_mut
+        .set_field_value(&mut doc.inner, "full_name", "Nikola Tesla")
+        .expect("set full_name");
+    acro_mut
+        .set_field_value(&mut doc.inner, "email", "tesla@techwasti.com")
+        .expect("set email");
 
     // Verify modified values in memory
     let updated_fields = acro_mut.fields(&doc.inner);
-    let name_field = updated_fields.iter().find(|f| f.name == "full_name").unwrap();
+    let name_field = updated_fields
+        .iter()
+        .find(|f| f.name == "full_name")
+        .unwrap();
     assert_eq!(name_field.value, Some("Nikola Tesla".to_string()));
 
     // 3. Flatten form

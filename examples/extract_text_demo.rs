@@ -12,7 +12,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 1. Extract text from each individual page
     for p in 0..doc.page_count() {
         let page_text = PDFTextStripper::extract_page_text(&doc.inner, p)?;
-        println!("\n--- Page {} Text ({} characters) ---", p + 1, page_text.len());
+        println!(
+            "\n--- Page {} Text ({} characters) ---",
+            p + 1,
+            page_text.len()
+        );
         println!("{}", page_text);
     }
 

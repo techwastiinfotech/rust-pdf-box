@@ -1,6 +1,5 @@
 use rust_pdf_box::cos::{
-    COSArray, COSDictionary, COSDocument, COSName, COSStream, COSString,
-    Parser, Writer,
+    COSArray, COSDictionary, COSDocument, COSName, COSStream, COSString, Parser, Writer,
 };
 
 #[test]
@@ -10,7 +9,10 @@ fn test_cos_string_escaping_and_hex() {
 
     let mut dict = COSDictionary::new();
     // Literal string with parentheses and escapes
-    dict.set("EscapedLiteral", COSString::literal("Line 1\nLine 2\t(Nested) \\ Backslash"));
+    dict.set(
+        "EscapedLiteral",
+        COSString::literal("Line 1\nLine 2\t(Nested) \\ Backslash"),
+    );
     // Hex string
     dict.set("HexStr", COSString::hex(vec![0xDE, 0xAD, 0xBE, 0xEF]));
     // Name with spaces and special chars
@@ -29,8 +31,13 @@ fn test_cos_string_escaping_and_hex() {
     let parsed_obj = parsed_doc.get_object(id).expect("object exists");
     let parsed_dict = parsed_obj.as_dict().expect("is dict");
 
-    let lit = parsed_dict.get_string("EscapedLiteral").expect("has string");
-    assert_eq!(lit.to_string_lossy(), "Line 1\nLine 2\t(Nested) \\ Backslash");
+    let lit = parsed_dict
+        .get_string("EscapedLiteral")
+        .expect("has string");
+    assert_eq!(
+        lit.to_string_lossy(),
+        "Line 1\nLine 2\t(Nested) \\ Backslash"
+    );
 
     let hex = parsed_dict.get_string("HexStr").expect("has hex");
     assert_eq!(hex.data, vec![0xDE, 0xAD, 0xBE, 0xEF]);

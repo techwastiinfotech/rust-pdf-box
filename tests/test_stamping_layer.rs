@@ -47,15 +47,28 @@ fn test_stamping_pipeline_and_layering() {
     // 2. Append foreground rubber stamp on page 2
     doc.stamp()
         .pages(PageRange::Single(2))
-        .position(StampPosition::BottomRight { margin_x: 30.0, margin_y: 30.0 })
-        .rubber_stamp("COMPLETED", Some("Audit Pass".to_string()), Color::rgb(0.0, 0.5, 0.2), 0.0)
+        .position(StampPosition::BottomRight {
+            margin_x: 30.0,
+            margin_y: 30.0,
+        })
+        .rubber_stamp(
+            "COMPLETED",
+            Some("Audit Pass".to_string()),
+            Color::rgb(0.0, 0.5, 0.2),
+            0.0,
+        )
         .apply(&mut doc.inner)
         .expect("rubber stamp failed");
 
     // 3. Header on all pages
     doc.stamp()
         .pages(PageRange::All)
-        .header("Techwasti - Page {page} of {total}", StampPosition::TopCenter { margin_y: 20.0 }, 10.0, Color::GRAY)
+        .header(
+            "Techwasti - Page {page} of {total}",
+            StampPosition::TopCenter { margin_y: 20.0 },
+            10.0,
+            Color::GRAY,
+        )
         .apply(&mut doc.inner)
         .expect("header failed");
 

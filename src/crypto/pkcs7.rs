@@ -7,10 +7,7 @@ use rsa::signature::{SignatureEncoding, Signer as RsaSignerTrait};
 use sha2::Sha256;
 
 /// Generates a detached PKCS#7 / CMS SignedData structure for PDF digital signing.
-pub fn generate_pkcs7_detached(
-    key: &SigningKey,
-    byte_range_sha256: &[u8],
-) -> PdfResult<Vec<u8>> {
+pub fn generate_pkcs7_detached(key: &SigningKey, byte_range_sha256: &[u8]) -> PdfResult<Vec<u8>> {
     let id_data = vec![1, 2, 840, 113549, 1, 7, 1];
     let id_signed_data = vec![1, 2, 840, 113549, 1, 7, 2];
     let id_sha256 = vec![2, 16, 840, 1, 101, 3, 4, 2, 1];
@@ -52,14 +49,10 @@ pub fn generate_pkcs7_detached(
     let signature = signer.sign(&signed_attrs_der);
 
     // 3. SignerIdentifier: IssuerAndSerialNumber
-    let issuer_seq = DerElement::Sequence(vec![
-        DerElement::Set(vec![
-            DerElement::Sequence(vec![
-                DerElement::ObjectIdentifier(vec![2, 5, 4, 3]),
-                DerElement::Utf8String("Techwasti Infotech".to_string()),
-            ])
-        ])
-    ]);
+    let issuer_seq = DerElement::Sequence(vec![DerElement::Set(vec![DerElement::Sequence(vec![
+        DerElement::ObjectIdentifier(vec![2, 5, 4, 3]),
+        DerElement::Utf8String("Techwasti Infotech".to_string()),
+    ])])]);
 
     let issuer_and_serial = DerElement::Sequence(vec![
         issuer_seq,
@@ -68,11 +61,8 @@ pub fn generate_pkcs7_detached(
 
     // 4. SignerInfo
     // [0] tag for authenticatedAttributes in SignerInfo
-    let auth_attrs_tagged = DerElement::ContextSpecific(
-        0,
-        Box::new(DerElement::Set(raw_attrs)),
-        true,
-    );
+    let auth_attrs_tagged =
+        DerElement::ContextSpecific(0, Box::new(DerElement::Set(raw_attrs)), true);
 
     let signer_info = DerElement::Sequence(vec![
         DerElement::integer_from_u64(1), // version = 1
@@ -90,9 +80,7 @@ pub fn generate_pkcs7_detached(
     ]);
 
     // 5. EncapsulatedContentInfo: id-data, no content (detached)
-    let encap_content_info = DerElement::Sequence(vec![
-        DerElement::ObjectIdentifier(id_data),
-    ]);
+    let encap_content_info = DerElement::Sequence(vec![DerElement::ObjectIdentifier(id_data)]);
 
     // 6. Certificates [0] IMPLICIT
     // We embed the raw DER bytes of the signer's certificate directly
@@ -105,12 +93,10 @@ pub fn generate_pkcs7_detached(
     // 7. SignedData
     let signed_data = DerElement::Sequence(vec![
         DerElement::integer_from_u64(1), // version = 1
-        DerElement::Set(vec![
-            DerElement::Sequence(vec![
-                DerElement::ObjectIdentifier(id_sha256),
-                DerElement::Null,
-            ])
-        ]),
+        DerElement::Set(vec![DerElement::Sequence(vec![
+            DerElement::ObjectIdentifier(id_sha256),
+            DerElement::Null,
+        ])]),
         encap_content_info,
         cert_tagged,
         DerElement::Set(vec![signer_info]),

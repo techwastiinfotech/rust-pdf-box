@@ -80,10 +80,16 @@ impl Signer {
             sig_dict.set("Reason", COSString::literal(reason.clone().into_bytes()));
         }
         if let Some(ref location) = self.location {
-            sig_dict.set("Location", COSString::literal(location.clone().into_bytes()));
+            sig_dict.set(
+                "Location",
+                COSString::literal(location.clone().into_bytes()),
+            );
         }
         if let Some(ref contact) = self.contact_info {
-            sig_dict.set("ContactInfo", COSString::literal(contact.clone().into_bytes()));
+            sig_dict.set(
+                "ContactInfo",
+                COSString::literal(contact.clone().into_bytes()),
+            );
         }
 
         let now = Utc::now();
@@ -135,7 +141,10 @@ impl Signer {
 
         // 4. Update Document Catalog AcroForm
         let mut catalog_dict = doc.cos_doc.get_catalog().cloned().unwrap_or_default();
-        let mut acro_form = catalog_dict.get_dict("AcroForm").cloned().unwrap_or_default();
+        let mut acro_form = catalog_dict
+            .get_dict("AcroForm")
+            .cloned()
+            .unwrap_or_default();
         acro_form.set("SigFlags", 3); // SignaturesExist | AppendOnly
 
         let mut fields = acro_form.get_array("Fields").cloned().unwrap_or_default();
@@ -155,14 +164,18 @@ impl Signer {
         let contents_start_pos = pdf_buffer
             .windows(contents_key.len())
             .position(|w| w == contents_key)
-            .ok_or_else(|| PdfError::Signature("Could not locate /Contents in serialized PDF".to_string()))?
+            .ok_or_else(|| {
+                PdfError::Signature("Could not locate /Contents in serialized PDF".to_string())
+            })?
             + b"/Contents ".len();
 
         let hex_start = contents_start_pos + 1; // skip '<'
         let hex_end = hex_start + (SIG_CONTENTS_BYTE_CAPACITY * 2);
 
         if hex_end >= pdf_buffer.len() || pdf_buffer[hex_end] != b'>' {
-            return Err(PdfError::Signature("Corrupted /Contents hex placeholder".to_string()));
+            return Err(PdfError::Signature(
+                "Corrupted /Contents hex placeholder".to_string(),
+            ));
         }
 
         let offset1 = contents_start_pos;
@@ -174,7 +187,9 @@ impl Signer {
         let byte_range_pos = pdf_buffer
             .windows(byte_range_key.len())
             .position(|w| w == byte_range_key)
-            .ok_or_else(|| PdfError::Signature("Could not locate /ByteRange in serialized PDF".to_string()))?;
+            .ok_or_else(|| {
+                PdfError::Signature("Could not locate /ByteRange in serialized PDF".to_string())
+            })?;
 
         // Format ByteRange with fixed width padding: "/ByteRange [ 0          {:10} {:10} {:10} ]"
         let byte_range_str = format!(

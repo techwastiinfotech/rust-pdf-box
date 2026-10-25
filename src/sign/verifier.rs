@@ -25,9 +25,10 @@ impl SignatureVerifier {
             .ok_or_else(|| PdfError::Signature("No /ByteRange found in PDF".to_string()))?;
 
         let slice = &pdf_bytes[byte_range_pos + byte_range_key.len()..];
-        let end_bracket = slice.iter().position(|&b| b == b']').ok_or_else(|| {
-            PdfError::Signature("Malformed /ByteRange array".to_string())
-        })?;
+        let end_bracket = slice
+            .iter()
+            .position(|&b| b == b']')
+            .ok_or_else(|| PdfError::Signature("Malformed /ByteRange array".to_string()))?;
 
         let range_str = std::str::from_utf8(&slice[..end_bracket])
             .map_err(|_| PdfError::Signature("Invalid UTF-8 in /ByteRange".to_string()))?;
@@ -44,7 +45,9 @@ impl SignatureVerifier {
         let (r0, r1, r2, r3) = (numbers[0], numbers[1], numbers[2], numbers[3]);
 
         if r0 != 0 || r1 > pdf_bytes.len() || r2 > pdf_bytes.len() || (r2 + r3) > pdf_bytes.len() {
-            return Err(PdfError::Signature("ByteRange offsets out of bounds".to_string()));
+            return Err(PdfError::Signature(
+                "ByteRange offsets out of bounds".to_string(),
+            ));
         }
 
         // 1. Compute SHA-256 hash over the designated byte ranges
@@ -63,9 +66,10 @@ impl SignatureVerifier {
             + contents_key.len();
 
         let hex_slice = &pdf_bytes[contents_start_pos..];
-        let hex_end = hex_slice.iter().position(|&b| b == b'>').ok_or_else(|| {
-            PdfError::Signature("Unterminated /Contents hex string".to_string())
-        })?;
+        let hex_end = hex_slice
+            .iter()
+            .position(|&b| b == b'>')
+            .ok_or_else(|| PdfError::Signature("Unterminated /Contents hex string".to_string()))?;
 
         let hex_str = std::str::from_utf8(&hex_slice[..hex_end])
             .map_err(|_| PdfError::Signature("Invalid hex in /Contents".to_string()))?;
@@ -78,7 +82,10 @@ impl SignatureVerifier {
         // 4. Extract metadata fields (/Name, /Reason, /Location, /M)
         let extract_field = |key: &str| -> Option<String> {
             let key_pattern = format!("/{key} (");
-            if let Some(pos) = pdf_bytes.windows(key_pattern.len()).position(|w| w == key_pattern.as_bytes()) {
+            if let Some(pos) = pdf_bytes
+                .windows(key_pattern.len())
+                .position(|w| w == key_pattern.as_bytes())
+            {
                 let start = pos + key_pattern.len();
                 if let Some(end_rel) = pdf_bytes[start..].iter().position(|&b| b == b')') {
                     return String::from_utf8(pdf_bytes[start..start + end_rel].to_vec()).ok();

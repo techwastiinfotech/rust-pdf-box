@@ -14,8 +14,14 @@ pub struct Parser<'a> {
 #[allow(dead_code)]
 enum XRefEntry {
     Free,
-    Normal { offset: usize, generation: u16 },
-    Compressed { obj_stm_num: u32, index_in_stream: u32 },
+    Normal {
+        offset: usize,
+        generation: u16,
+    },
+    Compressed {
+        obj_stm_num: u32,
+        index_in_stream: u32,
+    },
 }
 
 impl<'a> Parser<'a> {
@@ -49,7 +55,10 @@ impl<'a> Parser<'a> {
                     } else {
                         // Merge trailer entries without overwriting newer entries
                         for (k, v) in &trailer.entries {
-                            doc.trailer.entries.entry(k.clone()).or_insert_with(|| v.clone());
+                            doc.trailer
+                                .entries
+                                .entry(k.clone())
+                                .or_insert_with(|| v.clone());
                         }
                     }
 
@@ -63,7 +72,9 @@ impl<'a> Parser<'a> {
                     // Modern XRef Stream: "num gen obj << /Type /XRef ... >> stream ... endstream"
                     let gen_token = lexer.next_token()?;
                     let obj_token = lexer.next_token()?;
-                    if matches!(gen_token, Token::Integer(_)) && matches!(obj_token, Token::Keyword(ref k) if k == "obj") {
+                    if matches!(gen_token, Token::Integer(_))
+                        && matches!(obj_token, Token::Keyword(ref k) if k == "obj")
+                    {
                         let stream_obj = self.parse_direct_object(&mut lexer)?;
                         if let COSObject::Stream(s) = stream_obj {
                             let trailer = s.dict.clone();
@@ -102,7 +113,11 @@ impl<'a> Parser<'a> {
 
         // Load all normal objects
         for (&_obj_id, entry) in &xref_entries {
-            if let XRefEntry::Normal { offset, generation: _ } = entry {
+            if let XRefEntry::Normal {
+                offset,
+                generation: _,
+            } = entry
+            {
                 if *offset < self.data.len() {
                     let mut obj_lexer = Lexer::with_pos(self.data, *offset);
                     if let Ok((id, obj)) = self.parse_indirect_object(&mut obj_lexer) {
@@ -123,7 +138,11 @@ impl<'a> Parser<'a> {
         }
 
         for (&_obj_id, entry) in &xref_entries {
-            if let XRefEntry::Compressed { obj_stm_num, index_in_stream } = entry {
+            if let XRefEntry::Compressed {
+                obj_stm_num,
+                index_in_stream,
+            } = entry
+            {
                 if let Some(stm) = obj_streams.get(obj_stm_num) {
                     let decomp_res: PdfResult<Vec<u8>> = stm.decode();
                     if let Ok(decompressed) = decomp_res {
@@ -135,12 +154,16 @@ impl<'a> Parser<'a> {
                         for _ in 0..n {
                             let obj_num_tok = lex.next_token()?;
                             let offset_tok = lex.next_token()?;
-                            if let (Token::Integer(on), Token::Integer(off)) = (obj_num_tok, offset_tok) {
+                            if let (Token::Integer(on), Token::Integer(off)) =
+                                (obj_num_tok, offset_tok)
+                            {
                                 offsets.push((on as u32, first + off as usize));
                             }
                         }
 
-                        if let Some(&(target_num, byte_off)) = offsets.get(*index_in_stream as usize) {
+                        if let Some(&(target_num, byte_off)) =
+                            offsets.get(*index_in_stream as usize)
+                        {
                             if byte_off < decompressed.len() {
                                 let mut obj_lex = Lexer::with_pos(&decompressed, byte_off);
                                 if let Ok(obj) = self.parse_direct_object(&mut obj_lex) {
@@ -159,7 +182,11 @@ impl<'a> Parser<'a> {
 
     fn parse_header(&self) -> PdfResult<String> {
         let header_prefix = b"%PDF-";
-        if let Some(idx) = self.data.windows(header_prefix.len()).position(|w| w == header_prefix) {
+        if let Some(idx) = self
+            .data
+            .windows(header_prefix.len())
+            .position(|w| w == header_prefix)
+        {
             let start = idx + header_prefix.len();
             let mut end = start;
             while end < self.data.len() && self.data[end] != b'\r' && self.data[end] != b'\n' {
@@ -187,7 +214,9 @@ impl<'a> Parser<'a> {
             }
         }
 
-        Err(PdfError::InvalidFormat("Could not locate 'startxref'".to_string()))
+        Err(PdfError::InvalidFormat(
+            "Could not locate 'startxref'".to_string(),
+        ))
     }
 
     fn parse_classic_xref_section(
@@ -218,8 +247,11 @@ impl<'a> Parser<'a> {
                             let gen_token = lexer.next_token()?;
                             let type_token = lexer.next_token()?;
 
-                            if let (Token::Integer(off), Token::Integer(gen_num), Token::Keyword(t)) =
-                                (off_token, gen_token, type_token)
+                            if let (
+                                Token::Integer(off),
+                                Token::Integer(gen_num),
+                                Token::Keyword(t),
+                            ) = (off_token, gen_token, type_token)
                             {
                                 let obj_id = ObjectId::new(obj_num, gen_num as u16);
                                 if t == "n" {
@@ -250,11 +282,14 @@ impl<'a> Parser<'a> {
         stream: &COSStream,
         entries: &mut BTreeMap<ObjectId, XRefEntry>,
     ) -> PdfResult<()> {
-        let w_arr = stream.dict.get_array("W").ok_or_else(|| {
-            PdfError::InvalidFormat("Missing /W in xref stream".to_string())
-        })?;
+        let w_arr = stream
+            .dict
+            .get_array("W")
+            .ok_or_else(|| PdfError::InvalidFormat("Missing /W in xref stream".to_string()))?;
         if w_arr.len() < 3 {
-            return Err(PdfError::InvalidFormat("Invalid /W array in xref stream".to_string()));
+            return Err(PdfError::InvalidFormat(
+                "Invalid /W array in xref stream".to_string(),
+            ));
         }
 
         let w1 = w_arr.get(0).and_then(|o| o.as_integer()).unwrap_or(0) as usize;
@@ -297,25 +332,35 @@ impl<'a> Parser<'a> {
                     val
                 };
 
-                let t = if w1 > 0 { read_int(&entry_bytes[0..w1]) } else { 1 };
+                let t = if w1 > 0 {
+                    read_int(&entry_bytes[0..w1])
+                } else {
+                    1
+                };
                 let f2 = read_int(&entry_bytes[w1..w1 + w2]);
                 let f3 = read_int(&entry_bytes[w1 + w2..w1 + w2 + w3]);
 
                 match t {
                     0 => {
-                        entries.entry(ObjectId::new(obj_num, f3 as u16)).or_insert(XRefEntry::Free);
+                        entries
+                            .entry(ObjectId::new(obj_num, f3 as u16))
+                            .or_insert(XRefEntry::Free);
                     }
                     1 => {
-                        entries.entry(ObjectId::new(obj_num, f3 as u16)).or_insert(XRefEntry::Normal {
-                            offset: f2 as usize,
-                            generation: f3 as u16,
-                        });
+                        entries.entry(ObjectId::new(obj_num, f3 as u16)).or_insert(
+                            XRefEntry::Normal {
+                                offset: f2 as usize,
+                                generation: f3 as u16,
+                            },
+                        );
                     }
                     2 => {
-                        entries.entry(ObjectId::new(obj_num, 0)).or_insert(XRefEntry::Compressed {
-                            obj_stm_num: f2 as u32,
-                            index_in_stream: f3 as u32,
-                        });
+                        entries
+                            .entry(ObjectId::new(obj_num, 0))
+                            .or_insert(XRefEntry::Compressed {
+                                obj_stm_num: f2 as u32,
+                                index_in_stream: f3 as u32,
+                            });
                     }
                     _ => {}
                 }
@@ -332,7 +377,7 @@ impl<'a> Parser<'a> {
                 return Err(PdfError::Parse {
                     offset: lexer.pos(),
                     message: format!("Expected object number, found {:?}", tok),
-                })
+                });
             }
         };
 
@@ -342,7 +387,7 @@ impl<'a> Parser<'a> {
                 return Err(PdfError::Parse {
                     offset: lexer.pos(),
                     message: format!("Expected generation number, found {:?}", tok),
-                })
+                });
             }
         };
 
@@ -352,7 +397,7 @@ impl<'a> Parser<'a> {
                 return Err(PdfError::Parse {
                     offset: lexer.pos(),
                     message: format!("Expected 'obj' keyword, found {:?}", tok),
-                })
+                });
             }
         };
 
@@ -378,7 +423,10 @@ impl<'a> Parser<'a> {
                     let next2 = lexer.next_token()?;
                     if let Token::Keyword(ref r) = next2 {
                         if r == "R" {
-                            return Ok(COSObject::Reference(ObjectId::new(i as u32, gen_num as u16)));
+                            return Ok(COSObject::Reference(ObjectId::new(
+                                i as u32,
+                                gen_num as u16,
+                            )));
                         }
                     }
                 }
@@ -387,7 +435,10 @@ impl<'a> Parser<'a> {
                 Ok(COSObject::Integer(i))
             }
             Token::Real(f) => Ok(COSObject::Real(f)),
-            Token::String(bytes, fmt) => Ok(COSObject::String(COSString { data: bytes, format: fmt })),
+            Token::String(bytes, fmt) => Ok(COSObject::String(COSString {
+                data: bytes,
+                format: fmt,
+            })),
             Token::Name(name) => Ok(COSObject::Name(COSName::new(name))),
             Token::ArrayStart => {
                 let mut arr = COSArray::new();
@@ -417,8 +468,11 @@ impl<'a> Parser<'a> {
                         _ => {
                             return Err(PdfError::Parse {
                                 offset: lexer.pos(),
-                                message: format!("Expected dictionary key name, found {:?}", key_tok),
-                            })
+                                message: format!(
+                                    "Expected dictionary key name, found {:?}",
+                                    key_tok
+                                ),
+                            });
                         }
                     };
 

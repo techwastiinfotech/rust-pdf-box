@@ -86,9 +86,7 @@ impl PdfDocument {
 
     /// Applies a simple diagonal text watermark across all pages.
     pub fn watermark(&mut self, text: impl Into<String>) -> PdfResult<()> {
-        self.stamp()
-            .simple_watermark(text)
-            .apply(&mut self.inner)
+        self.stamp().simple_watermark(text).apply(&mut self.inner)
     }
 
     /// Digitally signs the document using the given Signer and returns signed PDF bytes.
@@ -109,7 +107,10 @@ impl PdfDocument {
     /// Splits this document into individual 1-page documents.
     pub fn split_single_pages(&self) -> PdfResult<Vec<PdfDocument>> {
         let docs = PDFSplitter::split_into_single_pages(&self.inner)?;
-        Ok(docs.into_iter().map(|inner| PdfDocument { inner }).collect())
+        Ok(docs
+            .into_iter()
+            .map(|inner| PdfDocument { inner })
+            .collect())
     }
 
     /// Flattens all interactive form fields into static page contents.

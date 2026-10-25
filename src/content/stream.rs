@@ -85,13 +85,24 @@ impl PDPageContentStream {
         self
     }
 
-    pub fn set_opacity_on_page(&mut self, page: &mut PDPage, stroke_alpha: f64, fill_alpha: f64) -> &mut Self {
+    pub fn set_opacity_on_page(
+        &mut self,
+        page: &mut PDPage,
+        stroke_alpha: f64,
+        fill_alpha: f64,
+    ) -> &mut Self {
         let gs_name = page.resources.add_ext_gstate(stroke_alpha, fill_alpha);
         self.write_line(&format!("/{} gs", gs_name));
         self
     }
 
-    pub fn set_opacity(&mut self, doc: &mut PDDocument, page_index: usize, stroke_alpha: f64, fill_alpha: f64) -> &mut Self {
+    pub fn set_opacity(
+        &mut self,
+        doc: &mut PDDocument,
+        page_index: usize,
+        stroke_alpha: f64,
+        fill_alpha: f64,
+    ) -> &mut Self {
         if let Ok(page) = doc.get_page_mut(page_index) {
             let gs_name = page.resources.add_ext_gstate(stroke_alpha, fill_alpha);
             self.write_line(&format!("/{} gs", gs_name));
@@ -220,7 +231,13 @@ impl PDPageContentStream {
         self
     }
 
-    pub fn set_font_type1(&mut self, doc: &mut PDDocument, page_index: usize, font: PDType1Font, size: f64) -> &mut Self {
+    pub fn set_font_type1(
+        &mut self,
+        doc: &mut PDDocument,
+        page_index: usize,
+        font: PDType1Font,
+        size: f64,
+    ) -> &mut Self {
         let font_id = doc.cos_doc.add_object(font.to_dict());
         if let Ok(page) = doc.get_page_mut(page_index) {
             let font_name = page.resources.add_font(font_id);
@@ -229,7 +246,13 @@ impl PDPageContentStream {
         self
     }
 
-    pub fn set_truetype_font(&mut self, doc: &mut PDDocument, page_index: usize, font: &PDTrueTypeFont, size: f64) -> &mut Self {
+    pub fn set_truetype_font(
+        &mut self,
+        doc: &mut PDDocument,
+        page_index: usize,
+        font: &PDTrueTypeFont,
+        size: f64,
+    ) -> &mut Self {
         if let Ok(page) = doc.get_page_mut(page_index) {
             let font_name = page.resources.add_font(font.font_id);
             self.write_line(&format!("/{} {:.3} Tf", font_name, size));
@@ -277,7 +300,13 @@ impl PDPageContentStream {
         self
     }
 
-    pub fn show_text_multiline(&mut self, lines: &[&str], x: f64, y: f64, leading: f64) -> &mut Self {
+    pub fn show_text_multiline(
+        &mut self,
+        lines: &[&str],
+        x: f64,
+        y: f64,
+        leading: f64,
+    ) -> &mut Self {
         self.set_leading(leading);
         self.set_text_matrix(1.0, 0.0, 0.0, 1.0, x, y);
         for (i, line) in lines.iter().enumerate() {
@@ -291,7 +320,14 @@ impl PDPageContentStream {
 
     // --- Image Drawing ---
 
-    pub fn draw_image(&mut self, image_name: &str, x: f64, y: f64, width: f64, height: f64) -> &mut Self {
+    pub fn draw_image(
+        &mut self,
+        image_name: &str,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+    ) -> &mut Self {
         self.save_graphics_state();
         self.transform(width, 0.0, 0.0, height, x, y);
         self.write_line(&format!("/{} Do", image_name));
