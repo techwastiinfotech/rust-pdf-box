@@ -494,3 +494,15 @@ impl From<ObjectId> for COSObject {
         Self::Reference(id)
     }
 }
+
+impl From<&str> for COSObject {
+    fn from(s: &str) -> Self {
+        Self::String(COSString::literal(s))
+    }
+}
+
+impl From<String> for COSObject {
+    fn from(s: String) -> Self {
+        Self::String(COSString::literal(s))
+    }
+}
